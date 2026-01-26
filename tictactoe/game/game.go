@@ -1,6 +1,8 @@
 package game
 
 import (
+	"home/gamecommon"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -12,7 +14,7 @@ const (
 
 // Game represents a game state.
 type Game struct {
-	input      *Input
+	input      *gamecommon.Input
 	board      *Board
 	boardImage *ebiten.Image
 	won        bool
@@ -21,7 +23,7 @@ type Game struct {
 // NewGame generates a new Game object.
 func NewGame() (*Game, error) {
 	g := &Game{
-		input: NewInput(),
+		input: gamecommon.NewInput(),
 	}
 	var err error
 	g.board, err = NewBoard(boardSize)

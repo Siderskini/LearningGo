@@ -16,6 +16,7 @@ package game
 
 import (
 	"errors"
+	"home/gamecommon"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -46,7 +47,7 @@ func NewBoard(size int) (*Board, error) {
 }
 
 // Update updates the board state.
-func (b *Board) Update(input *Input) (error, bool) {
+func (b *Board) Update(input *gamecommon.Input) (error, bool) {
 	if 0 < len(b.tasks) {
 		t := b.tasks[0]
 		if err := t(); err == taskTerminated {
