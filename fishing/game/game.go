@@ -77,6 +77,7 @@ func NewGame() (*Game, error) {
 				fish:  make(map[string]int),
 				money: 0,
 			}
+			save.fish["Salmon"] = 1
 		}
 	}
 	shop = &Shop{

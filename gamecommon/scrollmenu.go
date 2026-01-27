@@ -40,7 +40,7 @@ func NewScrollMenu(buttons []*Button, title string, x, y, width, height, buttonh
 		buttonheight:     buttonheight,
 		scrollMenuOffset: 0,
 		input:            input,
-		selected:         buttons[0].Name,
+		selected:         "",
 	}
 }
 
@@ -63,7 +63,7 @@ func (sm *ScrollMenu) Draw(screen *ebiten.Image) {
 
 func (sm *ScrollMenu) HandleInput() string {
 	for _, button := range sm.buttons {
-		pressed := button.IsPressedShifted(sm.x, sm.y)
+		pressed := button.IsPressedBounded(sm.x, sm.y, sm.width, sm.height)
 		if pressed {
 			sm.selected = button.Name
 			return sm.selected

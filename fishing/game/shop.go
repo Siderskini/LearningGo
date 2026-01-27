@@ -50,9 +50,6 @@ var storeItems = map[string]Item{
 }
 
 func init() {
-	for fish := range fishes {
-		fishButtons = append(fishButtons, newFishButton(fish))
-	}
 	for item := range storeItems {
 		storeButtons = append(storeButtons, newStoreButton(item))
 	}
@@ -77,11 +74,11 @@ func newStoreButton(itemName string) *gamecommon.Button {
 	return &btn
 }
 
-func newFishButton(fish string) *gamecommon.Button {
+func newFishButton(fish string, value int) *gamecommon.Button {
 	buttonWidth := 30
 	priceString := strconv.Itoa(fishes[fish].Price)
-	spaces := buttonWidth - len(priceString) - len(fish)
-	text := fish + string(bytes.Repeat([]byte(" "), spaces)) + "$" + priceString
+	spaces := buttonWidth - len(priceString) - len(fish) - 3
+	text := fish + string(bytes.Repeat([]byte(" "), spaces)) + "x" + strconv.Itoa(value) + " $" + priceString
 	btn := gamecommon.NewRectangleButton(fish, 0, 0, 0, 0, text, arcadeFaceSource, color.White, shopButtonBackGroundColor, input)
 	return &btn
 }
@@ -134,9 +131,10 @@ func (shop *Shop) Draw(screen *ebiten.Image) {
 }
 
 func (shop *Shop) Update(g *Game) error {
+	sellMenu = gamecommon.NewScrollMenu(fishButtons, "Sell Fish", ScreenWidth/2-200, 3*titleFontSize, 400, 300, 40, input)
 	if shop.ShopMode == Selling {
 		newFish := sellMenu.HandleInput()
-		if newFish != shop.selectedFish {
+		if newFish != "" && newFish != shop.selectedFish {
 			shop.resetSelection()
 			shop.selectedFish = newFish
 			return nil
@@ -195,6 +193,10 @@ func (shop *Shop) Update(g *Game) error {
 			listenForQuantity = false
 			return err
 		}
+	}
+	fishButtons = []*gamecommon.Button{}
+	for fish, value := range g.save.fish {
+		fishButtons = append(fishButtons, newFishButton(fish, value))
 	}
 	return nil
 }

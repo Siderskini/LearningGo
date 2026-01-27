@@ -51,9 +51,12 @@ func (button *Button) IsPressed() bool {
 }
 
 // If a button is being drawn onto an image other than the screen, you can pass the x and y of that image here to handle the translation
-func (button *Button) IsPressedShifted(x, y int) bool {
+func (button *Button) IsPressedBounded(x, y, width, height int) bool {
 	pressedLocation, ok := button.input.PressedLocation()
 	if !ok {
+		return false
+	}
+	if !NewRectangle(x, y, width, height).Contains(pressedLocation[0], pressedLocation[1]) {
 		return false
 	}
 	return button.shape.Contains(pressedLocation[0]-x, pressedLocation[1]-y)
