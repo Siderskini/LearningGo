@@ -16,6 +16,7 @@ var fishes = map[string]Fish{
 	"Trout":      Fish{"Trout", 40, 3000, 20},
 	"Bass":       Fish{"Bass", 50, 4000, 22},
 	"Carp":       Fish{"Carp", 45, 3500, 18},
+	"Swordfish":  Fish{"Swordfish", 65, 6000, 28},
 }
 
 func GetFish(key string) (Fish, bool) {
