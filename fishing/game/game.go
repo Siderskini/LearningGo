@@ -39,6 +39,7 @@ const (
 )
 
 func init() {
+	input = gamecommon.NewInput()
 	s, err := text.NewGoTextFaceSource(bytes.NewReader(fonts.PressStart2P_ttf))
 	if err != nil {
 		log.Fatal(err)
@@ -49,12 +50,16 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	startButton = gamecommon.NewRectangleButton("start", ScreenWidth/2-100, 5*titleFontSize, 200, 50, "Click to Start", arcadeFaceSource, color.White, color.RGBA{0, 0, 255, 255}, input)
 }
 
 var (
 	arcadeFaceSource       *text.GoTextFaceSource
 	fishingAnimationFrames []*ebiten.Image
 	framecounter           int
+	input                  *gamecommon.Input
+	startButton            gamecommon.Button
 )
 
 type Save struct {
@@ -78,7 +83,7 @@ func NewGame() (*Game, error) {
 		}
 	}
 	g := &Game{
-		input: gamecommon.NewInput(),
+		input: input,
 		save:  save,
 	}
 	return g, nil
@@ -91,17 +96,26 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 // Update updates the current game state.
 func (g *Game) Update() error {
-	g.input.Update()
-	_, pressed := g.input.PressedTile()
-	if pressed {
-		g.mode = Animation
+	switch g.mode {
+	case Title:
+		g.input.Update()
+		pressed := startButton.IsPressed()
+		if pressed {
+			g.mode = Animation
+		}
+		return nil
+	case Animation:
+		return nil
+	case Shopping:
+		return nil
+	case Fishing:
+		return nil
 	}
 	return nil
 }
 
 func (g *Game) drawTitle(screen *ebiten.Image) {
 	titleTexts := "FISHING GAME"
-	texts := "\n\n\n\n\n\nPRESS SPACE KEY\n\nOR A/B BUTTON\n\nOR TOUCH SCREEN"
 	op := &text.DrawOptions{}
 	op.GeoM.Translate(ScreenWidth/2, 3*titleFontSize)
 	op.ColorScale.ScaleWithColor(color.White)
@@ -112,15 +126,7 @@ func (g *Game) drawTitle(screen *ebiten.Image) {
 		Size:   titleFontSize,
 	}, op)
 
-	op = &text.DrawOptions{}
-	op.GeoM.Translate(ScreenWidth/2, 3*titleFontSize)
-	op.ColorScale.ScaleWithColor(color.White)
-	op.LineSpacing = fontSize
-	op.PrimaryAlign = text.AlignCenter
-	text.Draw(screen, texts, &text.GoTextFace{
-		Source: arcadeFaceSource,
-		Size:   fontSize,
-	}, op)
+	startButton.Draw(screen)
 
 	const msg = "Fishing Game by Sidd Viswanathan"
 
