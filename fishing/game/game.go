@@ -99,30 +99,6 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 	return ScreenWidth, ScreenHeight
 }
 
-func (shop *Shop) increaseQuantity() {
-	shop.quantity++
-}
-
-func (shop *Shop) dereaseQuantity() {
-	if shop.quantity > 0 {
-		shop.quantity--
-	}
-}
-
-func (shop *Shop) resetSelection() {
-	shop.selectedFish = ""
-	shop.selectedItem = ""
-	shop.quantity = 0
-}
-
-func (shop *Shop) makePurchase() {
-	if shop.ShopMode == Buying {
-		price := fishes[shop.selectedFish].Price
-		totalCost := price * shop.quantity
-		save.money -= totalCost
-	}
-}
-
 // Update updates the current game state.
 func (g *Game) Update() error {
 	g.input.Update()

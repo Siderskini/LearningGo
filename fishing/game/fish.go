@@ -1,22 +1,21 @@
 package game
 
 type Fish struct {
-	Name   string
+	Item
 	Size   int // in centimeters
 	Weight int // in grams
-	Price  int
 }
 
 var fishes = map[string]Fish{
-	"RedSnapper": Fish{"Red Snapper", 30, 2000, 15},
-	"Barracuda":  Fish{"Barracuda", 60, 5000, 25},
-	"Clownfish":  Fish{"Clownfish", 15, 500, 10},
-	"Salmon":     Fish{"Salmon", 70, 7000, 30},
-	"Tuna":       Fish{"Tuna", 80, 8000, 35},
-	"Trout":      Fish{"Trout", 40, 3000, 20},
-	"Bass":       Fish{"Bass", 50, 4000, 22},
-	"Carp":       Fish{"Carp", 45, 3500, 18},
-	"Swordfish":  Fish{"Swordfish", 65, 6000, 28},
+	"RedSnapper": Fish{Item{"Red Snapper", 15}, 30, 2000},
+	"Barracuda":  Fish{Item{"Barracuda", 25}, 60, 5000},
+	"Clownfish":  Fish{Item{"Clownfish", 10}, 15, 500},
+	"Salmon":     Fish{Item{"Salmon", 30}, 70, 7000},
+	"Tuna":       Fish{Item{"Tuna", 35}, 80, 8000},
+	"Trout":      Fish{Item{"Trout", 20}, 40, 3000},
+	"Bass":       Fish{Item{"Bass", 22}, 50, 4000},
+	"Carp":       Fish{Item{"Carp", 18}, 45, 3500},
+	"Swordfish":  Fish{Item{"Swordfish", 28}, 65, 6000},
 }
 
 func GetFish(key string) (Fish, bool) {

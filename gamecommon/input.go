@@ -91,11 +91,13 @@ type Input struct {
 	touchLastPosX int
 	touchLastPosY int
 	touchDir      Dir
+
+	constructedText string
 }
 
 // NewInput generates a new Input object.
 func NewInput() *Input {
-	return &Input{}
+	return &Input{constructedText: ""}
 }
 
 func abs(x int) int {
@@ -216,6 +218,51 @@ func (i *Input) Dir() (Dir, bool) {
 		return i.touchDir, true
 	}
 	return 0, false
+}
+
+func (i *Input) TextInput() string {
+	keys := []ebiten.Key{}
+	keys = inpututil.AppendJustPressedKeys(keys)
+	for _, key := range keys {
+		if key == ebiten.KeyBackspace {
+			i.constructedText = i.constructedText[0 : len(i.constructedText)-1]
+		} else if key == ebiten.KeyEnter {
+			temp := i.constructedText
+			i.constructedText = ""
+			return temp
+		} else {
+			i.constructedText += keyToStr(key)
+		}
+	}
+	return ""
+}
+
+// Turns a keypress into a string
+func keyToStr(k ebiten.Key) string {
+	switch k {
+	case ebiten.KeyDigit0:
+		return "0"
+	case ebiten.KeyDigit1:
+		return "1"
+	case ebiten.KeyDigit2:
+		return "2"
+	case ebiten.KeyDigit3:
+		return "3"
+	case ebiten.KeyDigit4:
+		return "4"
+	case ebiten.KeyDigit5:
+		return "5"
+	case ebiten.KeyDigit6:
+		return "6"
+	case ebiten.KeyDigit7:
+		return "7"
+	case ebiten.KeyDigit8:
+		return "8"
+	case ebiten.KeyDigit9:
+		return "9"
+	default:
+		return ""
+	}
 }
 
 func (i *Input) PressedLocation() ([]int, bool) {

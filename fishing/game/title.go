@@ -23,7 +23,7 @@ func init() {
 	quitButton = gamecommon.NewRectangleButton("quit", ScreenWidth/2-100, 9*titleFontSize, 200, 50, "Click to Quit", arcadeFaceSource, color.White, color.RGBA{0, 0, 255, 255}, input)
 }
 
-func (*TitlePage) Draw(screen *ebiten.Image) {
+func (title *TitlePage) Draw(screen *ebiten.Image) {
 	fishingButton.Draw(screen)
 	shoppingButton.Draw(screen)
 	quitButton.Draw(screen)
@@ -53,7 +53,7 @@ func (*TitlePage) Draw(screen *ebiten.Image) {
 	}, op)
 }
 
-func (*TitlePage) Update(g *Game) error {
+func (title *TitlePage) Update(g *Game) error {
 	pressed := fishingButton.IsPressed()
 	if pressed {
 		g.mode = Animation

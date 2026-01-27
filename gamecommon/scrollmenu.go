@@ -8,16 +8,17 @@ import (
 
 type ScrollMenu struct {
 	x, y, width, height, buttonheight int
-	buttons                           []Button
+	buttons                           []*Button
 	input                             *Input
 	scrollMenuOffset                  int
+	selected                          string
 }
 
 /*
 Create a new ScrollMenu with the given buttons and dimensions.
 buttons: slice of Button objects to display in the menu
 */
-func NewScrollMenu(buttons []Button, title string, x, y, width, height, buttonheight int, input *Input) *ScrollMenu {
+func NewScrollMenu(buttons []*Button, title string, x, y, width, height, buttonheight int, input *Input) *ScrollMenu {
 	for i, button := range buttons {
 		switch g := button.shape.geometry.(type) {
 		case Rectangle:
@@ -39,6 +40,7 @@ func NewScrollMenu(buttons []Button, title string, x, y, width, height, buttonhe
 		buttonheight:     buttonheight,
 		scrollMenuOffset: 0,
 		input:            input,
+		selected:         buttons[0].Name,
 	}
 }
 
@@ -46,7 +48,12 @@ func (sm *ScrollMenu) Draw(screen *ebiten.Image) {
 	menuImage := ebiten.NewImage(sm.width, sm.height)
 	menuImage.Fill(color.Black)
 	for i, button := range sm.buttons {
-		button.shape.Y = sm.y + (i-sm.scrollMenuOffset-2)*sm.buttonheight
+		button.shape.Y = (i-sm.scrollMenuOffset)*sm.buttonheight + 10
+		if sm.selected == button.Name {
+			button.Color = color.RGBA{255, 255, 0, 255}
+		} else {
+			button.Color = color.White
+		}
 		button.Draw(menuImage)
 	}
 	op := &ebiten.DrawImageOptions{}
@@ -54,18 +61,19 @@ func (sm *ScrollMenu) Draw(screen *ebiten.Image) {
 	screen.DrawImage(menuImage, op)
 }
 
-func (sm *ScrollMenu) HandleInput() {
+func (sm *ScrollMenu) HandleInput() string {
 	for _, button := range sm.buttons {
-		pressed := button.IsPressed()
+		pressed := button.IsPressedShifted(sm.x, sm.y)
 		if pressed {
-			// Handle button press logic here
+			sm.selected = button.Name
+			return sm.selected
 		}
 	}
 
 	//Handle the scrolling
 	dir, pressed := sm.input.Dir()
 	if !pressed {
-		return
+		return sm.selected
 	}
 	switch dir {
 	case DirUp:
@@ -74,15 +82,15 @@ func (sm *ScrollMenu) HandleInput() {
 				sm.scrollMenuOffset--
 			}
 		}
-		return
+		return sm.selected
 	case DirDown:
 		{
 			if sm.scrollMenuOffset < len(sm.buttons)-(sm.height/sm.buttonheight) {
 				sm.scrollMenuOffset++
 			}
 		}
-		return
+		return sm.selected
 	default:
-		return
+		return sm.selected
 	}
 }
