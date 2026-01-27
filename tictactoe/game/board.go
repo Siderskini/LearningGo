@@ -57,7 +57,7 @@ func (b *Board) Update(input *gamecommon.Input) (error, bool) {
 		}
 		return nil, false
 	}
-	if pressed, ok := input.PressedTile(); ok {
+	if pressed, ok := input.PressedLocation(); ok {
 		if err, won := b.PressTile(pressed); err != nil {
 			return err, false
 		} else if won {

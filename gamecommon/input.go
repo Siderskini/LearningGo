@@ -218,6 +218,6 @@ func (i *Input) Dir() (Dir, bool) {
 	return 0, false
 }
 
-func (i *Input) PressedTile() ([]int, bool) {
+func (i *Input) PressedLocation() ([]int, bool) {
 	return []int{i.mouseInitPosX, i.mouseInitPosY}, inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft)
 }
