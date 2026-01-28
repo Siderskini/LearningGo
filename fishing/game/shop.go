@@ -209,7 +209,7 @@ func (shop *Shop) Update(g *Game) error {
 		input.TextInputStart()
 	}
 	if listenForQuantity {
-		s, done := input.TextInput()
+		s, done := input.TextInputNums()
 		shop.displayedQuantity = s
 		if done {
 			quantity, err := strconv.Atoi(s)

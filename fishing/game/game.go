@@ -36,6 +36,7 @@ const (
 	Animation
 	Shopping
 	Fishing
+	Initializing
 )
 
 func init() {
@@ -70,20 +71,26 @@ var save *Save
 var shop *Shop
 var titlePage *TitlePage
 var activity *Activity
+var initial *Initial
 
 // NewGame generates a new Game object.
 func NewGame() (*Game, error) {
+	m := Title
 	save, err := gamecommon.LoadGame(save)
 	if err != nil {
 		if os.IsNotExist(err) {
 			save = &Save{
-				Name:      "Sidd",
+				Name:      "",
 				Fish:      make(map[string]int),
 				Inventory: make(map[string]int),
 				Money:     0,
 			}
+			m = Initializing
+		} else {
+			panic(err)
 		}
 	}
+
 	shop = &Shop{
 		selectedFish:      "",
 		selectedItem:      "",
@@ -93,10 +100,11 @@ func NewGame() (*Game, error) {
 
 	titlePage = &TitlePage{}
 	activity = &Activity{}
-
+	initial = &Initial{}
 	g := &Game{
 		input: input,
 		save:  save.(*Save),
+		mode:  m,
 	}
 	return g, nil
 }
@@ -118,6 +126,8 @@ func (g *Game) Update() error {
 		return shop.Update(g)
 	case Fishing:
 		return activity.Update(g)
+	case Initializing:
+		return initial.Update(g)
 	}
 	return nil
 }
@@ -147,5 +157,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		shop.Draw(g, screen)
 	case Fishing:
 		activity.Draw(screen)
+	case Initializing:
+		initial.Draw(screen)
 	}
 }

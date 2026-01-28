@@ -258,6 +258,27 @@ func (i *Input) TextInput() (string, bool) {
 	return i.constructedText, false
 }
 
+// Textinput is a utility to start listening for number text, return the currently inputted text, and return the finalized text when enter is pressed
+func (i *Input) TextInputNums() (string, bool) {
+	if !i.listenForText {
+		return i.constructedText, false
+	}
+	keys := []ebiten.Key{}
+	keys = inpututil.AppendJustPressedKeys(keys)
+	for _, key := range keys {
+		if key == ebiten.KeyBackspace {
+			i.constructedText = i.constructedText[0 : len(i.constructedText)-1]
+		} else if key == ebiten.KeyEnter {
+			temp := i.constructedText
+			i.TextInputStop()
+			return temp, true
+		} else {
+			i.constructedText += keyToNumStr(key)
+		}
+	}
+	return i.constructedText, false
+}
+
 func (i *Input) TextInputStart() {
 	i.listenForText = true
 	i.constructedText = ""
@@ -270,6 +291,86 @@ func (i *Input) TextInputStop() {
 
 // Turns a keypress into a string
 func keyToStr(k ebiten.Key) string {
+	switch k {
+	case ebiten.KeyDigit0:
+		return "0"
+	case ebiten.KeyDigit1:
+		return "1"
+	case ebiten.KeyDigit2:
+		return "2"
+	case ebiten.KeyDigit3:
+		return "3"
+	case ebiten.KeyDigit4:
+		return "4"
+	case ebiten.KeyDigit5:
+		return "5"
+	case ebiten.KeyDigit6:
+		return "6"
+	case ebiten.KeyDigit7:
+		return "7"
+	case ebiten.KeyDigit8:
+		return "8"
+	case ebiten.KeyDigit9:
+		return "9"
+	case ebiten.KeyA:
+		return "a"
+	case ebiten.KeyB:
+		return "b"
+	case ebiten.KeyC:
+		return "c"
+	case ebiten.KeyD:
+		return "d"
+	case ebiten.KeyE:
+		return "e"
+	case ebiten.KeyF:
+		return "f"
+	case ebiten.KeyG:
+		return "g"
+	case ebiten.KeyH:
+		return "h"
+	case ebiten.KeyI:
+		return "i"
+	case ebiten.KeyJ:
+		return "j"
+	case ebiten.KeyK:
+		return "k"
+	case ebiten.KeyL:
+		return "l"
+	case ebiten.KeyM:
+		return "m"
+	case ebiten.KeyN:
+		return "n"
+	case ebiten.KeyO:
+		return "o"
+	case ebiten.KeyP:
+		return "p"
+	case ebiten.KeyQ:
+		return "q"
+	case ebiten.KeyR:
+		return "r"
+	case ebiten.KeyS:
+		return "s"
+	case ebiten.KeyT:
+		return "t"
+	case ebiten.KeyU:
+		return "u"
+	case ebiten.KeyV:
+		return "v"
+	case ebiten.KeyW:
+		return "w"
+	case ebiten.KeyX:
+		return "x"
+	case ebiten.KeyY:
+		return "y"
+	case ebiten.KeyZ:
+		return "z"
+	default:
+		return ""
+	}
+}
+
+// Turns a number keypress into a string
+func keyToNumStr(k ebiten.Key) string {
 	switch k {
 	case ebiten.KeyDigit0:
 		return "0"
