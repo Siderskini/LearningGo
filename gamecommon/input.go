@@ -92,12 +92,13 @@ type Input struct {
 	touchLastPosY int
 	touchDir      Dir
 
+	listenForText   bool
 	constructedText string
 }
 
 // NewInput generates a new Input object.
 func NewInput() *Input {
-	return &Input{constructedText: ""}
+	return &Input{constructedText: "", listenForText: false}
 }
 
 func abs(x int) int {
@@ -220,7 +221,11 @@ func (i *Input) Dir() (Dir, bool) {
 	return 0, false
 }
 
-func (i *Input) TextInput() string {
+// Textinput is a utility to start listening for text, return the currently inputted text, and return the finalized text when enter is pressed
+func (i *Input) TextInput() (string, bool) {
+	if !i.listenForText {
+		return i.constructedText, false
+	}
 	keys := []ebiten.Key{}
 	keys = inpututil.AppendJustPressedKeys(keys)
 	for _, key := range keys {
@@ -228,13 +233,23 @@ func (i *Input) TextInput() string {
 			i.constructedText = i.constructedText[0 : len(i.constructedText)-1]
 		} else if key == ebiten.KeyEnter {
 			temp := i.constructedText
-			i.constructedText = ""
-			return temp
+			i.TextInputStop()
+			return temp, true
 		} else {
 			i.constructedText += keyToStr(key)
 		}
 	}
-	return ""
+	return i.constructedText, false
+}
+
+func (i *Input) TextInputStart() {
+	i.listenForText = true
+	i.constructedText = ""
+}
+
+func (i *Input) TextInputStop() {
+	i.listenForText = false
+	i.constructedText = ""
 }
 
 // Turns a keypress into a string

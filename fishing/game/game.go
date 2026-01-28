@@ -81,9 +81,10 @@ func NewGame() (*Game, error) {
 		}
 	}
 	shop = &Shop{
-		selectedFish: "",
-		selectedItem: "",
-		quantity:     0,
+		selectedFish:      "",
+		selectedItem:      "",
+		quantity:          0,
+		displayedQuantity: "0",
 	}
 
 	titlePage = &TitlePage{}

@@ -11,10 +11,11 @@ import (
 )
 
 type Shop struct {
-	ShopMode     ShopMode
-	selectedFish string
-	selectedItem string
-	quantity     int
+	ShopMode          ShopMode
+	selectedFish      string
+	selectedItem      string
+	quantity          int
+	displayedQuantity string
 }
 
 type ShopMode bool
@@ -91,7 +92,7 @@ func (shop *Shop) Draw(screen *ebiten.Image) {
 	plusButton.Draw(screen)
 	minusButton.Draw(screen)
 	confirmButton.Draw(screen)
-	quantityButton.Text = strconv.Itoa(shop.quantity)
+	quantityButton.Text = shop.displayedQuantity
 	quantityButton.Draw(screen)
 	if shop.ShopMode == Buying {
 		buyMenu.Draw(screen)
@@ -182,13 +183,25 @@ func (shop *Shop) Update(g *Game) error {
 	pressed = quantityButton.IsPressed()
 	if pressed {
 		listenForQuantity = true
+		input.TextInputStart()
 	}
 	if listenForQuantity {
-		s := input.TextInput()
-		if s != "" {
+		s, done := input.TextInput()
+		shop.displayedQuantity = s
+		if done {
 			quantity, err := strconv.Atoi(s)
 			if err == nil {
-				shop.quantity = quantity
+				if shop.ShopMode == Buying {
+					item, ok := storeItems[shop.selectedItem]
+					if ok && quantity*item.Price <= save.money {
+						shop.quantity = quantity
+					}
+				} else {
+					held, ok := save.fish[shop.selectedFish]
+					if ok && quantity <= held {
+						shop.quantity = quantity
+					}
+				}
 			}
 			listenForQuantity = false
 			return err
@@ -215,29 +228,55 @@ func toggleShopMode(shop *Shop) {
 }
 
 func (shop *Shop) increaseQuantity() {
+	listenForQuantity = false
+	input.TextInputStop()
+	if shop.ShopMode == Selling {
+		held, ok := save.fish[shop.selectedFish]
+		if !ok || shop.quantity >= held {
+			return
+		}
+	} else {
+		item, ok := storeItems[shop.selectedItem]
+		if !ok || (shop.quantity+1)*item.Price > save.money {
+			return
+		}
+	}
 	shop.quantity++
+	shop.displayedQuantity = strconv.Itoa(shop.quantity)
 }
 
 func (shop *Shop) dereaseQuantity() {
+	listenForQuantity = false
+	input.TextInputStop()
 	if shop.quantity > 0 {
 		shop.quantity--
 	}
+	shop.displayedQuantity = strconv.Itoa(shop.quantity)
 }
 
 func (shop *Shop) resetSelection() {
 	shop.selectedFish = ""
 	shop.selectedItem = ""
 	shop.quantity = 0
+	shop.displayedQuantity = "0"
 }
 
 func (shop *Shop) makePurchase() {
 	if shop.ShopMode == Buying {
-		price := storeItems[shop.selectedItem].Price
-		totalCost := price * shop.quantity
+		item, ok := storeItems[shop.selectedItem]
+		if !ok {
+			return
+		}
+		totalCost := item.Price * shop.quantity
 		save.money -= totalCost
 	} else {
-		price := fishes[shop.selectedFish].Price
-		totalCost := price * shop.quantity
+		fish, ok := fishes[shop.selectedFish]
+		if !ok {
+			return
+		}
+		totalCost := fish.Price * shop.quantity
 		save.money += totalCost
+		save.fish[shop.selectedFish] -= shop.quantity
 	}
+	shop.resetSelection()
 }
