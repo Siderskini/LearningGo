@@ -28,6 +28,7 @@ const (
 var (
 	shopButtonBackGroundColor = color.RGBA{0, 0, 255, 255}
 	listenForQuantity         = false
+	fishButtonsCreated        = false
 )
 
 // shopping buttons
@@ -84,7 +85,15 @@ func newFishButton(fish string, value int) *gamecommon.Button {
 	return &btn
 }
 
-func (shop *Shop) Draw(screen *ebiten.Image) {
+func updateButtonQuantity(b *gamecommon.Button, value int) {
+	buttonWidth := 30
+	priceString := strconv.Itoa(fishes[b.Name].Price)
+	spaces := buttonWidth - len(priceString) - len(b.Name) - 3
+	text := b.Name + string(bytes.Repeat([]byte(" "), spaces)) + "x" + strconv.Itoa(value) + " $" + priceString
+	b.Text = text
+}
+
+func (shop *Shop) Draw(g *Game, screen *ebiten.Image) {
 	// Draw buttons and menus
 	buyButton.Draw(screen)
 	sellButton.Draw(screen)
@@ -106,7 +115,7 @@ func (shop *Shop) Draw(screen *ebiten.Image) {
 	op.ColorScale.ScaleWithColor(color.RGBA{255, 255, 0, 255})
 	op.LineSpacing = titleFontSize
 	op.PrimaryAlign = text.AlignCenter
-	text.Draw(screen, "Money: "+strconv.Itoa(save.money), &text.GoTextFace{
+	text.Draw(screen, "Money: "+strconv.Itoa(g.save.Money), &text.GoTextFace{
 		Source: arcadeFaceSource,
 		Size:   24,
 	}, op)
@@ -132,6 +141,20 @@ func (shop *Shop) Draw(screen *ebiten.Image) {
 }
 
 func (shop *Shop) Update(g *Game) error {
+	if !fishButtonsCreated {
+		fishButtons = []*gamecommon.Button{}
+		for fish, value := range g.save.Fish {
+			fishButtons = append(fishButtons, newFishButton(fish, value))
+		}
+		fishButtonsCreated = true
+	} else {
+		for _, b := range fishButtons {
+			held, found := g.save.Fish[b.Name]
+			if found {
+				updateButtonQuantity(b, held)
+			}
+		}
+	}
 	sellMenu = gamecommon.NewScrollMenu(fishButtons, "Sell Fish", ScreenWidth/2-200, 3*titleFontSize, 400, 300, 40, input)
 	if shop.ShopMode == Selling {
 		newFish := sellMenu.HandleInput()
@@ -161,7 +184,7 @@ func (shop *Shop) Update(g *Game) error {
 	}
 	pressed = plusButton.IsPressed()
 	if pressed {
-		shop.increaseQuantity()
+		shop.increaseQuantity(g)
 		return nil
 	}
 	pressed = minusButton.IsPressed()
@@ -177,7 +200,7 @@ func (shop *Shop) Update(g *Game) error {
 	}
 	pressed = confirmButton.IsPressed()
 	if pressed {
-		shop.makePurchase()
+		shop.makePurchase(g)
 		return nil
 	}
 	pressed = quantityButton.IsPressed()
@@ -193,11 +216,11 @@ func (shop *Shop) Update(g *Game) error {
 			if err == nil {
 				if shop.ShopMode == Buying {
 					item, ok := storeItems[shop.selectedItem]
-					if ok && quantity*item.Price <= save.money {
+					if ok && quantity*item.Price <= g.save.Money {
 						shop.quantity = quantity
 					}
 				} else {
-					held, ok := save.fish[shop.selectedFish]
+					held, ok := g.save.Fish[shop.selectedFish]
 					if ok && quantity <= held {
 						shop.quantity = quantity
 					}
@@ -206,10 +229,6 @@ func (shop *Shop) Update(g *Game) error {
 			listenForQuantity = false
 			return err
 		}
-	}
-	fishButtons = []*gamecommon.Button{}
-	for fish, value := range g.save.fish {
-		fishButtons = append(fishButtons, newFishButton(fish, value))
 	}
 	return nil
 }
@@ -227,17 +246,17 @@ func toggleShopMode(shop *Shop) {
 	shop.resetSelection()
 }
 
-func (shop *Shop) increaseQuantity() {
+func (shop *Shop) increaseQuantity(g *Game) {
 	listenForQuantity = false
 	input.TextInputStop()
 	if shop.ShopMode == Selling {
-		held, ok := save.fish[shop.selectedFish]
+		held, ok := g.save.Fish[shop.selectedFish]
 		if !ok || shop.quantity >= held {
 			return
 		}
 	} else {
 		item, ok := storeItems[shop.selectedItem]
-		if !ok || (shop.quantity+1)*item.Price > save.money {
+		if !ok || (shop.quantity+1)*item.Price > g.save.Money {
 			return
 		}
 	}
@@ -261,22 +280,24 @@ func (shop *Shop) resetSelection() {
 	shop.displayedQuantity = "0"
 }
 
-func (shop *Shop) makePurchase() {
+func (shop *Shop) makePurchase(g *Game) {
 	if shop.ShopMode == Buying {
 		item, ok := storeItems[shop.selectedItem]
 		if !ok {
 			return
 		}
 		totalCost := item.Price * shop.quantity
-		save.money -= totalCost
+		g.save.Money -= totalCost
+		gamecommon.SaveGame(g.save)
 	} else {
 		fish, ok := fishes[shop.selectedFish]
 		if !ok {
 			return
 		}
 		totalCost := fish.Price * shop.quantity
-		save.money += totalCost
-		save.fish[shop.selectedFish] -= shop.quantity
+		g.save.Money += totalCost
+		g.save.Fish[shop.selectedFish] -= shop.quantity
+		gamecommon.SaveGame(g.save)
 	}
 	shop.resetSelection()
 }

@@ -56,6 +56,7 @@ func (title *TitlePage) Draw(screen *ebiten.Image) {
 func (title *TitlePage) Update(g *Game) error {
 	pressed := fishingButton.IsPressed()
 	if pressed {
+		g.catchFish()
 		g.mode = Animation
 	}
 	pressed = shoppingButton.IsPressed()

@@ -2,8 +2,10 @@ package game
 
 import (
 	"bytes"
+	"encoding/gob"
 	"home/gamecommon"
 	"log"
+	"math/rand"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -38,6 +40,7 @@ const (
 )
 
 func init() {
+	gob.Register(save)
 	input = gamecommon.NewInput()
 	s, err := text.NewGoTextFaceSource(bytes.NewReader(fonts.PressStart2P_ttf))
 	if err != nil {
@@ -58,9 +61,9 @@ var (
 )
 
 type Save struct {
-	name  string
-	fish  map[string]int
-	money int
+	Name  string
+	Fish  map[string]int
+	Money int
 }
 
 var save *Save
@@ -69,15 +72,14 @@ var titlePage *TitlePage
 
 // NewGame generates a new Game object.
 func NewGame() (*Game, error) {
-	err := gamecommon.LoadGame(save)
+	save, err := gamecommon.LoadGame(save)
 	if err != nil {
 		if os.IsNotExist(err) {
 			save = &Save{
-				name:  "Sidd",
-				fish:  make(map[string]int),
-				money: 0,
+				Name:  "Sidd",
+				Fish:  make(map[string]int),
+				Money: 0,
 			}
-			save.fish["Salmon"] = 1
 		}
 	}
 	shop = &Shop{
@@ -91,7 +93,7 @@ func NewGame() (*Game, error) {
 
 	g := &Game{
 		input: input,
-		save:  save,
+		save:  save.(*Save),
 	}
 	return g, nil
 }
@@ -99,6 +101,24 @@ func NewGame() (*Game, error) {
 // Layout implements ebiten.Game's Layout.
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
 	return ScreenWidth, ScreenHeight
+}
+
+func (g *Game) catchFish() {
+	k := rand.Intn(len(fishes))
+	for fish := range fishes {
+		if k == 0 {
+			held, found := g.save.Fish[fish]
+			if !found {
+				g.save.Fish[fish] = 1
+			} else {
+				g.save.Fish[fish] = held + 1
+			}
+			gamecommon.SaveGame(g.save)
+			return
+		}
+		k--
+	}
+	panic("unreachable")
 }
 
 // Update updates the current game state.
@@ -143,7 +163,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	case Animation:
 		g.drawAnimation(screen)
 	case Shopping:
-		shop.Draw(screen)
+		shop.Draw(g, screen)
 	case Fishing:
 		g.drawFishing(screen)
 	}
