@@ -146,6 +146,7 @@ func (shop *Shop) Update(g *Game) error {
 		for fish, value := range g.save.Fish {
 			fishButtons = append(fishButtons, newFishButton(fish, value))
 		}
+		sellMenu = gamecommon.NewScrollMenu(fishButtons, "Sell Fish", ScreenWidth/2-200, 3*titleFontSize, 400, 300, 40, input)
 		fishButtonsCreated = true
 	} else {
 		for _, b := range fishButtons {
@@ -155,7 +156,6 @@ func (shop *Shop) Update(g *Game) error {
 			}
 		}
 	}
-	sellMenu = gamecommon.NewScrollMenu(fishButtons, "Sell Fish", ScreenWidth/2-200, 3*titleFontSize, 400, 300, 40, input)
 	if shop.ShopMode == Selling {
 		newFish := sellMenu.HandleInput()
 		if newFish != "" && newFish != shop.selectedFish {
@@ -288,6 +288,12 @@ func (shop *Shop) makePurchase(g *Game) {
 		}
 		totalCost := item.Price * shop.quantity
 		g.save.Money -= totalCost
+		held, ok := g.save.Inventory[shop.selectedItem]
+		if ok {
+			g.save.Inventory[shop.selectedItem] = held + shop.quantity
+		} else {
+			g.save.Inventory[shop.selectedItem] = shop.quantity
+		}
 		gamecommon.SaveGame(g.save)
 	} else {
 		fish, ok := fishes[shop.selectedFish]

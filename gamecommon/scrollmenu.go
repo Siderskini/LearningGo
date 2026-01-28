@@ -20,11 +20,11 @@ buttons: slice of Button objects to display in the menu
 */
 func NewScrollMenu(buttons []*Button, title string, x, y, width, height, buttonheight int, input *Input) *ScrollMenu {
 	for i, button := range buttons {
-		switch g := button.shape.geometry.(type) {
+		switch g := button.shape.Geometry.(type) {
 		case Rectangle:
 			g.Width = width - 20
 			g.Height = buttonheight - 2
-			button.shape.geometry = g
+			button.shape.Geometry = g
 		default:
 			panic("ScrollMenu only supports Rectangle buttons")
 		}

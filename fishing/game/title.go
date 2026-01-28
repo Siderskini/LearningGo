@@ -57,7 +57,7 @@ func (title *TitlePage) Update(g *Game) error {
 	pressed := fishingButton.IsPressed()
 	if pressed {
 		g.catchFish()
-		g.mode = Animation
+		g.mode = Fishing
 	}
 	pressed = shoppingButton.IsPressed()
 	if pressed {

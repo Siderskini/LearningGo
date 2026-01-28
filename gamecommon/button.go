@@ -72,7 +72,7 @@ func (button *Button) Draw(screen *ebiten.Image) {
 	textOp.PrimaryAlign = text.AlignCenter
 	textOp.SecondaryAlign = text.AlignCenter
 
-	switch g := button.shape.geometry.(type) {
+	switch g := button.shape.Geometry.(type) {
 	case Rectangle:
 		textOp.GeoM.Translate(float64(x+g.Width/2), float64(y+g.Height/2))
 		vector.FillRect(screen, float32(x), float32(y), float32(g.Width), float32(g.Height), button.BackGroundColor, true)

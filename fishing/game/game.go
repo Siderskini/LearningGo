@@ -5,7 +5,6 @@ import (
 	"encoding/gob"
 	"home/gamecommon"
 	"log"
-	"math/rand"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -47,7 +46,7 @@ func init() {
 		log.Fatal(err)
 	}
 	arcadeFaceSource = s
-	fishingAnimationFrames, err = gamecommon.ToEbitenFrames("./fishing/resources/fishing.gif", 600)
+	fishingAnimationFrames, err = gamecommon.ToEbitenFrames("./fishing/resources/fishing.gif", 120)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -61,14 +60,16 @@ var (
 )
 
 type Save struct {
-	Name  string
-	Fish  map[string]int
-	Money int
+	Name      string
+	Fish      map[string]int
+	Inventory map[string]int
+	Money     int
 }
 
 var save *Save
 var shop *Shop
 var titlePage *TitlePage
+var activity *Activity
 
 // NewGame generates a new Game object.
 func NewGame() (*Game, error) {
@@ -76,9 +77,10 @@ func NewGame() (*Game, error) {
 	if err != nil {
 		if os.IsNotExist(err) {
 			save = &Save{
-				Name:  "Sidd",
-				Fish:  make(map[string]int),
-				Money: 0,
+				Name:      "Sidd",
+				Fish:      make(map[string]int),
+				Inventory: make(map[string]int),
+				Money:     0,
 			}
 		}
 	}
@@ -90,6 +92,7 @@ func NewGame() (*Game, error) {
 	}
 
 	titlePage = &TitlePage{}
+	activity = &Activity{}
 
 	g := &Game{
 		input: input,
@@ -103,24 +106,6 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 	return ScreenWidth, ScreenHeight
 }
 
-func (g *Game) catchFish() {
-	k := rand.Intn(len(fishes))
-	for fish := range fishes {
-		if k == 0 {
-			held, found := g.save.Fish[fish]
-			if !found {
-				g.save.Fish[fish] = 1
-			} else {
-				g.save.Fish[fish] = held + 1
-			}
-			gamecommon.SaveGame(g.save)
-			return
-		}
-		k--
-	}
-	panic("unreachable")
-}
-
 // Update updates the current game state.
 func (g *Game) Update() error {
 	g.input.Update()
@@ -132,7 +117,7 @@ func (g *Game) Update() error {
 	case Shopping:
 		return shop.Update(g)
 	case Fishing:
-		return nil
+		return activity.Update(g)
 	}
 	return nil
 }
@@ -150,10 +135,6 @@ func (g *Game) drawAnimation(screen *ebiten.Image) {
 	framecounter++
 }
 
-func (g *Game) drawFishing(screen *ebiten.Image) {
-
-}
-
 // Draw draws the current game to the given screen.
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(backgroundColor)
@@ -165,6 +146,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	case Shopping:
 		shop.Draw(g, screen)
 	case Fishing:
-		g.drawFishing(screen)
+		activity.Draw(screen)
 	}
 }

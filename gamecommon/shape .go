@@ -2,7 +2,7 @@ package gamecommon
 
 type Shape struct {
 	X, Y     int
-	geometry any
+	Geometry any
 }
 
 type Rectangle struct {
@@ -18,7 +18,7 @@ func NewRectangle(x, y, width, height int) Shape {
 	return Shape{
 		X: x,
 		Y: y,
-		geometry: Rectangle{
+		Geometry: Rectangle{
 			Width:  width,
 			Height: height,
 		},
@@ -30,14 +30,14 @@ func NewCircle(x, y, radius int) Shape {
 	return Shape{
 		X: x,
 		Y: y,
-		geometry: Circle{
+		Geometry: Circle{
 			Radius: radius,
 		},
 	}
 }
 
 func (s Shape) Contains(px, py int) bool {
-	switch g := s.geometry.(type) {
+	switch g := s.Geometry.(type) {
 	case Rectangle:
 		return px >= s.X && px <= s.X+g.Width && py >= s.Y && py <= s.Y+g.Height
 	case Circle:

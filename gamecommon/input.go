@@ -15,6 +15,8 @@
 package gamecommon
 
 import (
+	"math/rand"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
@@ -72,6 +74,20 @@ func (d Dir) Vector() (x, y int) {
 		return 0, 1
 	case DirLeft:
 		return -1, 0
+	}
+	panic("not reach")
+}
+
+func RandomDir() Dir {
+	switch rand.Intn(4) {
+	case 0:
+		return DirUp
+	case 1:
+		return DirRight
+	case 2:
+		return DirDown
+	case 3:
+		return DirLeft
 	}
 	panic("not reach")
 }
