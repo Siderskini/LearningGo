@@ -10,9 +10,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/audio/wav"
-	raudio "github.com/hajimehoshi/ebiten/v2/examples/resources/audio"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
@@ -58,11 +56,16 @@ func init() {
 	if audioContext == nil {
 		audioContext = audio.NewContext(48000)
 	}
-	jabD, err := wav.DecodeF32(bytes.NewReader(raudio.Jab_wav))
+	bs, err := os.ReadFile("./fishing/resources/fishing.wav")
 	if err != nil {
 		log.Fatal(err)
 	}
-	audioPlayer, err = audioContext.NewPlayerF32(jabD)
+	jabD, err := wav.DecodeF32(bytes.NewReader(bs))
+	if err != nil {
+		log.Fatal(err)
+	}
+	loop = audio.NewInfiniteLoopF32(jabD, jabD.Length())
+	audioPlayer, err = audioContext.NewPlayerF32(loop)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -74,6 +77,7 @@ var (
 	framecounter           int
 	input                  *gamecommon.Input
 	audioContext           *audio.Context
+	loop                   *audio.InfiniteLoop
 	audioPlayer            *audio.Player
 )
 
@@ -134,9 +138,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 // Update updates the current game state.
 func (g *Game) Update() error {
 	g.input.Update()
-	if inpututil.IsKeyJustPressed(ebiten.KeyK) {
-		audioPlayer.Play()
-	}
+	audioPlayer.Play()
 	switch g.mode {
 	case Title:
 		return titlePage.Update(g)
