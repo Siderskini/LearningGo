@@ -3,6 +3,7 @@ package game
 import (
 	"encoding/gob"
 	"home/gamecommon"
+	"home/gamecommon/save"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -83,7 +84,7 @@ var (
 func NewGame() (*Game, error) {
 	m := Title
 	// Try to load a save. If one doesn't exist, send the user to initializing
-	save, err := gamecommon.LoadGame(&Save{})
+	save, err := save.LoadGame(&Save{})
 	if err != nil {
 		if os.IsNotExist(err) {
 			save = &Save{
@@ -95,6 +96,15 @@ func NewGame() (*Game, error) {
 			m = Initializing
 		} else {
 			panic(err)
+		}
+	} else {
+		if save == nil {
+			save = &Save{
+				Name:      "",
+				Fish:      make(map[string]int),
+				Inventory: make(map[string]int),
+				Money:     0,
+			}
 		}
 	}
 
