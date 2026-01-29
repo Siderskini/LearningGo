@@ -44,7 +44,7 @@ const (
 func init() {
 	gob.Register(save)
 	input = gamecommon.NewInput()
-	s, err := text.NewGoTextFaceSource(bytes.NewReader(fonts.PressStart2P_ttf))
+	s, err := text.NewGoTextFaceSource(bytes.NewReader(fonts.MPlus1pRegular_ttf))
 	if err != nil {
 		log.Fatal(err)
 	}

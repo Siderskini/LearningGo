@@ -70,7 +70,7 @@ func newStoreButton(itemName string) *gamecommon.Button {
 	item := storeItems[itemName]
 	buttonWidth := 30
 	priceString := strconv.Itoa(item.Price)
-	spaces := buttonWidth - len(priceString) - len(item.Name)
+	spaces := 2 * (buttonWidth - len(priceString) - len(item.Name) + 23)
 	text := item.Name + string(bytes.Repeat([]byte(" "), spaces)) + "$" + priceString
 	btn := gamecommon.NewRectangleButton(item.Name, 0, 0, 0, 0, text, arcadeFaceSource, color.White, shopButtonBackGroundColor, input)
 	return &btn
@@ -79,7 +79,7 @@ func newStoreButton(itemName string) *gamecommon.Button {
 func newFishButton(fish string, value int) *gamecommon.Button {
 	buttonWidth := 30
 	priceString := strconv.Itoa(fishes[fish].Price)
-	spaces := buttonWidth - len(priceString) - len(fish) - 3
+	spaces := 2 * (buttonWidth - len(priceString) - len(fish) - 3)
 	text := fish + string(bytes.Repeat([]byte(" "), spaces)) + "x" + strconv.Itoa(value) + " $" + priceString
 	btn := gamecommon.NewRectangleButton(fish, 0, 0, 0, 0, text, arcadeFaceSource, color.White, shopButtonBackGroundColor, input)
 	return &btn
@@ -88,7 +88,7 @@ func newFishButton(fish string, value int) *gamecommon.Button {
 func updateButtonQuantity(b *gamecommon.Button, value int) {
 	buttonWidth := 30
 	priceString := strconv.Itoa(fishes[b.Name].Price)
-	spaces := buttonWidth - len(priceString) - len(b.Name) - 3
+	spaces := 2 * (buttonWidth - len(priceString) - len(b.Name) + 20)
 	text := b.Name + string(bytes.Repeat([]byte(" "), spaces)) + "x" + strconv.Itoa(value) + " $" + priceString
 	b.Text = text
 }
