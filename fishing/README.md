@@ -19,5 +19,5 @@ Remaining work includes:
 Build:
 Linux (supported):  `GOOS=linux GOARCH=amd64 go build -o fishing.sh main.go`
 Windows (supported):  `GOOS=linux GOARCH=amd64 go build -o fishing.exe main.go`
-Browser (limited support):  `GOOS=js GOARCH=wasm go build -o fishing/web/main.wasm main.go`
+Browser (supported):  `GOOS=js GOARCH=wasm go build -o fishing/web/main.wasm main.go`
 More on the browser deployment in the web folder.
