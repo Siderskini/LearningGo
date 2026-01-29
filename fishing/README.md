@@ -17,7 +17,13 @@ Remaining work includes:
 - Support for more functionality (textanimations, complex animations, gif production, etc)
 
 Build:
-Linux (supported):  `GOOS=linux GOARCH=amd64 go build -o fishing.sh main.go`
+
+Linux (supported):  `GOOS=linux GOARCH=amd64 go build -o fishingapp main.go`
+
 Windows (supported):  `GOOS=linux GOARCH=amd64 go build -o fishing.exe main.go`
+
 Browser (supported):  `GOOS=js GOARCH=wasm go build -o fishing/web/main.wasm main.go`
+
+MacOS (supported):  `GOOS=darwin GOARCH=arm64 go build -o fishingapp main.go` (I was not able to build this on linux, only MacOS)
+
 More on the browser deployment in the web folder.
