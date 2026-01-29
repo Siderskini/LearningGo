@@ -49,14 +49,15 @@ func init() {
 		log.Fatal(err)
 	}
 	arcadeFaceSource = s
-	fishingAnimationFrames, err = gamecommon.ToEbitenFrames("./fishing/resources/fishing.gif", 120)
+	file, err := resources.Open("fishing.gif")
+	fishingAnimationFrames, err = gamecommon.ToEbitenFrames(file, 120)
 	if err != nil {
 		log.Fatal(err)
 	}
 	if audioContext == nil {
 		audioContext = audio.NewContext(48000)
 	}
-	bs, err := os.ReadFile("./fishing/resources/fishing.wav")
+	bs, err := resources.ReadFile("fishing.wav")
 	if err != nil {
 		log.Fatal(err)
 	}

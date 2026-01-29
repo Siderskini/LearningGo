@@ -3,7 +3,7 @@ package gamecommon
 //Basic utility package to transform gifs into ebiten animatables
 import (
 	"image/gif"
-	"os"
+	"io/fs"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -13,12 +13,7 @@ const (
 )
 
 // ToEbitenFrames loads a gif from the given filename and converts it into a slice of ebiten.Images. Each frame is duplicated to match the given duration in frames.
-func ToEbitenFrames(filename string, duration int) ([]*ebiten.Image, error) {
-	file, err := os.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
+func ToEbitenFrames(file fs.File, duration int) ([]*ebiten.Image, error) {
 
 	gifImg, err := gif.DecodeAll(file)
 	if err != nil {
