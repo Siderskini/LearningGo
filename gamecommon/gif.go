@@ -19,7 +19,7 @@ func ToEbitenFrames(file fs.File, duration int) ([]*ebiten.Image, error) {
 	if err != nil {
 		return nil, err
 	}
-	frameConv := duration / len(gifImg.Image)
+	frameConv := duration/len(gifImg.Image) + 1
 	frames := make([]*ebiten.Image, duration)
 	for i := 0; i < duration; i++ {
 		frames[i] = ebiten.NewImageFromImage(gifImg.Image[i/frameConv])

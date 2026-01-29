@@ -6,6 +6,6 @@ import (
 )
 
 var (
-	//go:embed fishing.gif fishing.wav
+	//go:embed fishing.gif fishing.wav background.gif
 	resources embed.FS
 )

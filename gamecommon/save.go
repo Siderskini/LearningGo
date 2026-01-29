@@ -11,6 +11,10 @@ const (
 
 // Takes a pointer to an empty any struct, populates the struct with the save data from the save file, and returns back the poin
 func LoadGame(s any) (any, error) {
+	return loadGameFromSaveFile(s)
+}
+
+func loadGameFromSaveFile(s any) (any, error) {
 	file, err := os.Open(fileName)
 	if err != nil {
 		return nil, err
@@ -23,6 +27,10 @@ func LoadGame(s any) (any, error) {
 		return nil, err
 	}
 	return s, nil
+}
+
+func loadGameFromBrowserStorage() (any, error) {
+	return nil, nil
 }
 
 // Takes a pointer to any struct and a filename, and saves the struct data to the given filename

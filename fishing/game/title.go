@@ -39,7 +39,7 @@ func (title *TitlePage) Draw(screen *ebiten.Image) {
 		Size:   titleFontSize,
 	}, op)
 
-	const msg = "Fishing Game by Sidd Viswanathan"
+	const msg = "Fishing Game by Sidd Viswanathan and Olga Nam"
 
 	op = &text.DrawOptions{}
 	op.GeoM.Translate(ScreenWidth/2, ScreenHeight-smallFontSize/2)
