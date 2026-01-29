@@ -37,6 +37,10 @@ func (activity *Activity) Draw(screen *ebiten.Image) {
 
 	//Draw the fish
 	vector.FillRect(screen, float32(fishx), float32(fishy), float32(20), float32(10), color.Black, true)
+
+	//Draw the progress bar
+	vector.FillRect(screen, ScreenWidth/2-150, ScreenHeight/2+200, float32(300), float32(40), color.Black, true)
+	vector.FillRect(screen, ScreenWidth/2-150, ScreenHeight/2+200, float32(goodframes)*1.5, float32(40), color.White, true)
 }
 
 func (activity *Activity) Update(g *Game) error {
@@ -74,7 +78,7 @@ func (activity *Activity) Update(g *Game) error {
 func restart() {
 	frame = 0
 	goodframes = 0
-	fishx, fishy = rand.Intn(ScreenWidth), rand.Intn(ScreenHeight)
+	fishx, fishy = rand.Intn(ScreenWidth), rand.Intn(ScreenHeight-100)
 }
 
 func (g *Game) catchFish() {
