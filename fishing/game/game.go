@@ -158,6 +158,7 @@ func (g *Game) Update() error {
 	audioPlayer.Play()
 	switch g.mode {
 	case Title:
+		backGroundAnimation.Update(func(i int) bool { return true })
 		return titlePage.Update(g)
 	case Animation:
 		if fishingAnimation.Update(fishingAnimationUpdate) {
@@ -165,10 +166,13 @@ func (g *Game) Update() error {
 		}
 		return nil
 	case Shopping:
+		backGroundAnimation.Update(func(i int) bool { return true })
 		return shop.Update(g)
 	case Fishing:
+		backGroundAnimation.Update(func(i int) bool { return true })
 		return activity.Update(g)
 	case Initializing:
+		backGroundAnimation.Update(func(i int) bool { return true })
 		return initial.Update(g)
 	}
 	return nil
@@ -189,6 +193,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		backGroundAnimation.Draw(screen)
 		activity.Draw(screen)
 	case Initializing:
+		backGroundAnimation.Draw((screen))
 		initial.Draw(screen)
 	}
 }
