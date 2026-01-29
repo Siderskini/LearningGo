@@ -8,3 +8,16 @@ The purpose of this project is to create the generic building blocks for a game:
 - Audio
 
 There is a possibility of expanding this scope in the future. As buiding blocks are made, they will be added to gamecommon for use in future projects.
+
+UPDATE: Above scope is complete in a basic form, but can be improved.
+
+Remaining work includes:
+- Support for different platforms (windows, macos, browser, mobile)
+- Icons, textures, more content
+- Support for more functionality (textanimations, complex animations, gif production, etc)
+
+Build:
+Linux (supported):  `GOOS=linux GOARCH=amd64 go build -o fishing.sh main.go`
+Windows (supported):  `GOOS=linux GOARCH=amd64 go build -o fishing.exe main.go`
+Browser (limited support):  `GOOS=js GOARCH=wasm go build -o fishing/web/main.wasm main.go`
+More on the browser deployment in the web folder.
