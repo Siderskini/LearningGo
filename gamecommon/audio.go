@@ -17,6 +17,7 @@ func NewAudio(audioContext *audio.Context, bs []byte) *audio.Player {
 	}
 	loop := audio.NewInfiniteLoopF32(s, s.Length())
 	audioPlayer, err := audioContext.NewPlayerF32(loop)
+	audioPlayer.SetVolume(0.04)
 	if err != nil {
 		log.Fatal(err)
 	}
