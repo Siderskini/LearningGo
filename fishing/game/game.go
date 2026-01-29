@@ -51,12 +51,18 @@ func init() {
 	arcadeFaceSource = s
 	file, err := resources.Open("background.gif")
 	backgroundAnimationFrames, err = gamecommon.ToEbitenFrames(file, 640)
+	if err != nil {
+		log.Fatal(err)
+	}
+	backGroundAnimation = gamecommon.NewAnimation(backgroundAnimationFrames)
 
 	file, err = resources.Open("fishing.gif")
 	fishingAnimationFrames, err = gamecommon.ToEbitenFrames(file, 120)
 	if err != nil {
 		log.Fatal(err)
 	}
+	fishingAnimation = gamecommon.NewAnimation(fishingAnimationFrames)
+
 	if audioContext == nil {
 		audioContext = audio.NewContext(48000)
 	}
@@ -98,6 +104,8 @@ var shop *Shop
 var titlePage *TitlePage
 var activity *Activity
 var initial *Initial
+var backGroundAnimation *gamecommon.Animation
+var fishingAnimation *gamecommon.Animation
 
 // NewGame generates a new Game object.
 func NewGame() (*Game, error) {
@@ -140,6 +148,10 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 	return ScreenWidth, ScreenHeight
 }
 
+func fishingAnimationUpdate(i int) bool {
+	return i > len(fishingAnimationFrames)
+}
+
 // Update updates the current game state.
 func (g *Game) Update() error {
 	g.input.Update()
@@ -148,6 +160,9 @@ func (g *Game) Update() error {
 	case Title:
 		return titlePage.Update(g)
 	case Animation:
+		if fishingAnimation.Update(fishingAnimationUpdate) {
+			g.mode = Title
+		}
 		return nil
 	case Shopping:
 		return shop.Update(g)
@@ -159,43 +174,19 @@ func (g *Game) Update() error {
 	return nil
 }
 
-func (g *Game) drawAnimation(frames []*ebiten.Image, screen *ebiten.Image) {
-	//Draw animation content here
-	if framecounter >= len(frames) {
-		framecounter = 0
-		g.mode = Title
-		return
-	}
-	currentImage := frames[framecounter]
-	op := &ebiten.DrawImageOptions{}
-	screen.DrawImage(currentImage, op)
-	framecounter++
-}
-
-func (g *Game) drawBackgroundAnimation(frames []*ebiten.Image, screen *ebiten.Image) {
-	//Draw animation content here
-	if framecounter >= 1000000 {
-		framecounter = 0
-	}
-	currentImage := frames[framecounter%len(frames)]
-	op := &ebiten.DrawImageOptions{}
-	screen.DrawImage(currentImage, op)
-	framecounter++
-}
-
 // Draw draws the current game to the given screen.
 func (g *Game) Draw(screen *ebiten.Image) {
 	switch g.mode {
 	case Title:
-		g.drawBackgroundAnimation(backgroundAnimationFrames, screen)
+		backGroundAnimation.Draw(screen)
 		titlePage.Draw(screen)
 	case Animation:
-		g.drawAnimation(fishingAnimationFrames, screen)
+		fishingAnimation.Draw(screen)
 	case Shopping:
-		g.drawBackgroundAnimation(backgroundAnimationFrames, screen)
+		backGroundAnimation.Draw(screen)
 		shop.Draw(g, screen)
 	case Fishing:
-		g.drawBackgroundAnimation(backgroundAnimationFrames, screen)
+		backGroundAnimation.Draw(screen)
 		activity.Draw(screen)
 	case Initializing:
 		initial.Draw(screen)

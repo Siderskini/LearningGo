@@ -16,6 +16,7 @@ type Button struct {
 	faceSource      *text.GoTextFaceSource
 	Color           color.Color
 	BackGroundColor color.Color
+	Icon            *ebiten.Image
 }
 
 func NewRectangleButton(name string, x, y, width, height int, text string, faceSource *text.GoTextFaceSource, color color.Color, backgroundColor color.Color, input *Input) Button {
@@ -78,6 +79,12 @@ func (button *Button) Draw(screen *ebiten.Image) {
 		vector.FillRect(screen, float32(x), float32(y), float32(g.Width), float32(g.Height), button.BackGroundColor, true)
 	case Circle:
 		vector.FillCircle(screen, float32(x), float32(y), float32(g.Radius), button.BackGroundColor, true)
+	}
+
+	if button.Icon != nil {
+		iconOp := &ebiten.DrawImageOptions{}
+		iconOp.GeoM.Translate(float64(x), float64(y))
+		button.Icon.DrawImage(screen, iconOp)
 	}
 
 	text.Draw(screen, button.Text, &text.GoTextFace{
