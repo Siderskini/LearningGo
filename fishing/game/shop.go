@@ -66,6 +66,15 @@ func init() {
 	quantityButton = gamecommon.NewRectangleButton("quantity", ScreenWidth/2-140, 14*titleFontSize, 60, 50, "0", arcadeFaceSource, color.White, backgroundColor, input)
 }
 
+func NewShop() *Shop {
+	return &Shop{
+		selectedFish:      "",
+		selectedItem:      "",
+		quantity:          0,
+		displayedQuantity: "0",
+	}
+}
+
 func newStoreButton(itemName string) *gamecommon.Button {
 	item := storeItems[itemName]
 	buttonWidth := 30

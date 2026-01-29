@@ -49,7 +49,7 @@ func (activity *Activity) Update(g *Game) error {
 		restart()
 	}
 
-	dir, ok := g.input.Dir()
+	dir, ok := input.Dir()
 	if ok {
 		dx, dy := dir.Vector()
 		fishx += dx * 50

@@ -1,36 +1,45 @@
 package game
 
 import (
-	"bytes"
 	"encoding/gob"
 	"home/gamecommon"
-	"log"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/audio"
-	"github.com/hajimehoshi/ebiten/v2/audio/wav"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
+// Global constants
 const (
 	ScreenWidth   = 420
 	ScreenHeight  = 600
-	boardSize     = 3
-	titleFontSize = fontSize * 1.25
 	fontSize      = 24
 	smallFontSize = fontSize / 2
 )
 
-// Game represents a game state.
+// Game represents the game state
 type Game struct {
-	mode       Mode
-	input      *gamecommon.Input
-	boardImage *ebiten.Image
-	save       *Save
+	mode Mode
+	save *Save
 }
 
+/*
+Save data contains:
+Name: the player name
+Fish: the currently held fish. the keys will include all caught fish
+Inventory: the currently held non-fish items
+Money: the player's balance
+*/
+type Save struct {
+	Name      string
+	Fish      map[string]int
+	Inventory map[string]int
+	Money     int
+}
+
+// Current mode of the game
 type Mode int
 
 const (
@@ -41,76 +50,40 @@ const (
 	Initializing
 )
 
-func init() {
-	gob.Register(save)
-	input = gamecommon.NewInput()
-	s, err := text.NewGoTextFaceSource(bytes.NewReader(fonts.MPlus1pRegular_ttf))
-	if err != nil {
-		log.Fatal(err)
-	}
-	arcadeFaceSource = s
-	file, err := resources.Open("background.gif")
-	backgroundAnimationFrames, err = gamecommon.ToEbitenFrames(file, 640)
-	if err != nil {
-		log.Fatal(err)
-	}
-	backGroundAnimation = gamecommon.NewAnimation(backgroundAnimationFrames)
-
-	file, err = resources.Open("fishing.gif")
-	fishingAnimationFrames, err = gamecommon.ToEbitenFrames(file, 120)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fishingAnimation = gamecommon.NewAnimation(fishingAnimationFrames)
-
-	if audioContext == nil {
-		audioContext = audio.NewContext(48000)
-	}
-	bs, err := resources.ReadFile("fishing.wav")
-	if err != nil {
-		log.Fatal(err)
-	}
-	jabD, err := wav.DecodeF32(bytes.NewReader(bs))
-	if err != nil {
-		log.Fatal(err)
-	}
-	loop = audio.NewInfiniteLoopF32(jabD, jabD.Length())
-	audioPlayer, err = audioContext.NewPlayerF32(loop)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
+// Resource Variables
 var (
-	arcadeFaceSource          *text.GoTextFaceSource
-	fishingAnimationFrames    []*ebiten.Image
-	backgroundAnimationFrames []*ebiten.Image
-	framecounter              int
-	input                     *gamecommon.Input
-	audioContext              *audio.Context
-	loop                      *audio.InfiniteLoop
-	audioPlayer               *audio.Player
+	arcadeFaceSource *text.GoTextFaceSource
+	input            *gamecommon.Input
+	audioContext     *audio.Context
+	loop             *audio.InfiniteLoop
+	audioPlayer      *audio.Player
 )
 
-type Save struct {
-	Name      string
-	Fish      map[string]int
-	Inventory map[string]int
-	Money     int
+func init() {
+	gob.Register(&Save{})
+	input = gamecommon.NewInput()
+	arcadeFaceSource = gamecommon.NewFont(fonts.MPlus1pRegular_ttf)
+	backGroundAnimation = gamecommon.NewAnimation(resources, "background.gif", 640)
+	fishingAnimation = gamecommon.NewAnimation(resources, "fishing.gif", 120)
+	audioContext = audio.NewContext(48000)
+	audioPlayer = gamecommon.NewAudio(audioContext, fishingwav)
 }
 
-var save *Save
-var shop *Shop
-var titlePage *TitlePage
-var activity *Activity
-var initial *Initial
-var backGroundAnimation *gamecommon.Animation
-var fishingAnimation *gamecommon.Animation
+// Game variables
+var (
+	shop                *Shop
+	titlePage           *TitlePage
+	activity            *Activity
+	initial             *Initial
+	backGroundAnimation *gamecommon.Animation
+	fishingAnimation    *gamecommon.Animation
+)
 
 // NewGame generates a new Game object.
 func NewGame() (*Game, error) {
 	m := Title
-	save, err := gamecommon.LoadGame(save)
+	// Try to load a save. If one doesn't exist, send the user to initializing
+	save, err := gamecommon.LoadGame(&Save{})
 	if err != nil {
 		if os.IsNotExist(err) {
 			save = &Save{
@@ -125,20 +98,13 @@ func NewGame() (*Game, error) {
 		}
 	}
 
-	shop = &Shop{
-		selectedFish:      "",
-		selectedItem:      "",
-		quantity:          0,
-		displayedQuantity: "0",
-	}
-
+	shop = NewShop()
 	titlePage = &TitlePage{}
 	activity = &Activity{}
 	initial = &Initial{}
 	g := &Game{
-		input: input,
-		save:  save.(*Save),
-		mode:  m,
+		save: save.(*Save),
+		mode: m,
 	}
 	return g, nil
 }
@@ -149,12 +115,12 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 }
 
 func fishingAnimationUpdate(i int) bool {
-	return i > len(fishingAnimationFrames)
+	return i > 120
 }
 
 // Update updates the current game state.
 func (g *Game) Update() error {
-	g.input.Update()
+	input.Update()
 	audioPlayer.Play()
 	switch g.mode {
 	case Title:

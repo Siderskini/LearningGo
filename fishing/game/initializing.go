@@ -37,10 +37,10 @@ func (initial *Initial) Draw(screen *ebiten.Image) {
 func (initial *Initial) Update(g *Game) error {
 	if nameButton.IsPressed() {
 		listeningForName = true
-		g.input.TextInputStart()
+		input.TextInputStart()
 	}
 	if listeningForName {
-		temp, done := g.input.TextInput()
+		temp, done := input.TextInput()
 		if done {
 			g.save = &Save{
 				Name:      temp,

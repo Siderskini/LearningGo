@@ -1,14 +1,27 @@
 package gamecommon
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"embed"
+	"log"
+
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 type Animation struct {
 	Frames []*ebiten.Image
 	frame  int
 }
 
-func NewAnimation(frames []*ebiten.Image) *Animation {
-	return &Animation{Frames: frames, frame: 0}
+func NewAnimation(resources embed.FS, filename string, duration int) *Animation {
+	file, err := resources.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	Frames, err := ToEbitenFrames(file, duration)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return &Animation{Frames: Frames, frame: 0}
 }
 
 func (animation *Animation) Update(updateFunc func(int) bool) bool {

@@ -10,6 +10,8 @@ import (
 
 type TitlePage struct{}
 
+const titleFontSize = fontSize * 1.25
+
 // title buttons
 var (
 	fishingButton  gamecommon.Button
