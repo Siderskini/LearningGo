@@ -2,7 +2,6 @@ package gamecommon
 
 import (
 	"embed"
-	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -13,14 +12,8 @@ type Animation struct {
 }
 
 func NewAnimation(resources embed.FS, filename string, duration int) *Animation {
-	file, err := resources.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	Frames, err := ToEbitenFrames(file, duration)
-	if err != nil {
-		log.Fatal(err)
-	}
+	file := TryPanic(resources.Open(filename))
+	Frames := TryPanic(ToEbitenFrames(file, duration))
 	return &Animation{Frames: Frames, frame: 0}
 }
 

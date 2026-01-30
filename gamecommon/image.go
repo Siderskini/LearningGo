@@ -46,14 +46,7 @@ func (i *ImageResource) ToNativeImage() *image.Paletted {
 
 func (i *ImageResource) SaveToFile(filename string) {
 	// Write to file
-	file, err := os.Create(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
+	file := TryLog(os.Create(filename))
 	defer file.Close()
-
-	err = png.Encode(file, i.ToNativeImage())
-	if err != nil {
-		panic(err)
-	}
+	TryPanic("", png.Encode(file, i.ToNativeImage()))
 }

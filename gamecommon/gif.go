@@ -5,7 +5,6 @@ import (
 	"image"
 	"image/gif"
 	"io/fs"
-	"log"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -17,11 +16,7 @@ const (
 
 // ToEbitenFrames loads a gif from the given filename and converts it into a slice of ebiten.Images. Each frame is duplicated to match the given duration in frames.
 func ToEbitenFrames(file fs.File, duration int) ([]*ebiten.Image, error) {
-
-	gifImg, err := gif.DecodeAll(file)
-	if err != nil {
-		return nil, err
-	}
+	gifImg := TryPanic(gif.DecodeAll(file))
 	frameConv := duration/len(gifImg.Image) + 1
 	frames := make([]*ebiten.Image, duration)
 	for i := 0; i < duration; i++ {
@@ -42,16 +37,8 @@ func FromEbitenFrames(frames []*ebiten.Image, filename string) {
 		Image: gifFrames,
 		Delay: delays,
 	}
-
 	// Write to file
-	file, err := os.Create(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
+	file := TryLog(os.Create(filename))
 	defer file.Close()
-
-	err = gif.EncodeAll(file, anim)
-	if err != nil {
-		panic(err)
-	}
+	TryPanic("", gif.EncodeAll(file, anim))
 }

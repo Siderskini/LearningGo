@@ -4,6 +4,7 @@ package save
 
 import (
 	"encoding/json"
+	"home/gamecommon"
 	"os"
 	"syscall/js"
 )
@@ -23,17 +24,13 @@ func LoadGameLowLevel(s any) (any, error) {
 	return s, nil
 }
 
-func SaveGameLowLevel(s any) error {
+func SaveGameLowLevel(s any) {
 	// Get the global window object
 	window := js.Global()
 	// Access localStorage
 	localStorage := window.Get("localStorage")
 
 	// Save a key-value pair
-	jssave, err := json.Marshal(s)
-	if err != nil {
-		return err
-	}
+	jssave := gamecommon.TryPanic(json.Marshal(s))
 	localStorage.Call("setItem", "savedat", string(jssave))
-	return nil
 }

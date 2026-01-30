@@ -4,6 +4,7 @@ package save
 
 import (
 	"encoding/gob"
+	"home/gamecommon"
 	"os"
 )
 
@@ -20,26 +21,14 @@ func LoadGameLowLevel(s any) (any, error) {
 	defer file.Close()
 
 	decoder := gob.NewDecoder(file)
-	err = decoder.Decode(&s)
-	if err != nil {
-		return nil, err
-	}
+	gamecommon.TryPanic("", decoder.Decode(&s))
 	return s, nil
 }
 
 // Takes a pointer to any struct and a filename, and saves the struct data to the given filename
-func SaveGameLowLevel(s any) error {
-
-	file, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
+func SaveGameLowLevel(s any) {
+	file := gamecommon.TryPanic(os.Create(fileName))
 	defer file.Close()
-
 	encoder := gob.NewEncoder(file)
-	err = encoder.Encode(&s)
-	if err != nil {
-		return err
-	}
-	return nil
+	gamecommon.TryPanic("", encoder.Encode(&s))
 }
