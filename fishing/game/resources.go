@@ -11,4 +11,7 @@ var (
 
 	//go:embed fishing.wav
 	fishingwav []byte
+
+	//go:embed startfishing.png
+	startfishing []byte
 )

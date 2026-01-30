@@ -84,7 +84,7 @@ func (button *Button) Draw(screen *ebiten.Image) {
 	if button.Icon != nil {
 		iconOp := &ebiten.DrawImageOptions{}
 		iconOp.GeoM.Translate(float64(x), float64(y))
-		button.Icon.DrawImage(screen, iconOp)
+		screen.DrawImage(button.Icon, iconOp)
 	}
 
 	text.Draw(screen, button.Text, &text.GoTextFace{

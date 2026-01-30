@@ -20,7 +20,8 @@ var (
 )
 
 func init() {
-	fishingButton = gamecommon.NewRectangleButton("fish", ScreenWidth/2-100, 5*titleFontSize, 200, 50, "Click to Start", arcadeFaceSource, color.White, color.RGBA{0, 0, 255, 255}, input)
+	fishingButton = gamecommon.NewRectangleButton("fish", ScreenWidth/2-100, 5*titleFontSize, 200, 50, "Click to Start", arcadeFaceSource, color.White, color.RGBA{0, 0, 0, 0}, input)
+	fishingButton.Icon = gamecommon.NewImage(startfishing).Image
 	shoppingButton = gamecommon.NewRectangleButton("shop", ScreenWidth/2-100, 7*titleFontSize, 200, 50, "Click to Shop", arcadeFaceSource, color.White, color.RGBA{0, 0, 255, 255}, input)
 	quitButton = gamecommon.NewRectangleButton("quit", ScreenWidth/2-100, 9*titleFontSize, 200, 50, "Click to Quit", arcadeFaceSource, color.White, color.RGBA{0, 0, 255, 255}, input)
 }

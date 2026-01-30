@@ -58,6 +58,7 @@ var (
 	audioContext     *audio.Context
 	loop             *audio.InfiniteLoop
 	audioPlayer      *audio.Player
+	screenCapture    *gamecommon.ScreenCapture
 )
 
 func init() {
@@ -68,6 +69,7 @@ func init() {
 	fishingAnimation = gamecommon.NewAnimation(resources, "fishing.gif", 120)
 	audioContext = audio.NewContext(48000)
 	audioPlayer = gamecommon.NewAudio(audioContext, fishingwav)
+	screenCapture = gamecommon.NewScreenCapture(10, "temp.gif")
 }
 
 // Game variables
@@ -97,25 +99,15 @@ func NewGame() (*Game, error) {
 		} else {
 			panic(err)
 		}
-	} else {
-		if save == nil {
-			save = &Save{
-				Name:      "",
-				Fish:      make(map[string]int),
-				Inventory: make(map[string]int),
-				Money:     0,
-			}
-		}
 	}
-
-	shop = NewShop()
-	titlePage = &TitlePage{}
-	activity = &Activity{}
-	initial = &Initial{}
 	g := &Game{
 		save: save.(*Save),
 		mode: m,
 	}
+	shop = NewShop()
+	titlePage = &TitlePage{}
+	activity = &Activity{}
+	initial = &Initial{}
 	return g, nil
 }
 
@@ -138,6 +130,7 @@ func (g *Game) Update() error {
 		return titlePage.Update(g)
 	case Animation:
 		if fishingAnimation.Update(fishingAnimationUpdate) {
+			screenCapture.Capture()
 			g.mode = Title
 		}
 		return nil
@@ -172,4 +165,5 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		backGroundAnimation.Draw((screen))
 		initial.Draw(screen)
 	}
+	screenCapture.Draw(screen)
 }
