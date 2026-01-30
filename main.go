@@ -20,5 +20,5 @@ func main() {
 			panic("Invalid Argument")
 		}
 	*/
-	fishing.StartGame()
+	fishing.Dummy()
 }
