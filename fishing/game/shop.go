@@ -1,3 +1,17 @@
+// Copyright 2026 Siddharth Viswnathan
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package game
 
 import (
@@ -64,7 +78,7 @@ func init() {
 	plusButton = gamecommon.NewRectangleButton("plus", ScreenWidth/2-80, 14*titleFontSize, 60, 50, "+", arcadeFaceSource, color.White, color.RGBA{0, 0, 255, 255}, input)
 	minusButton = gamecommon.NewRectangleButton("minus", ScreenWidth/2-200, 14*titleFontSize, 60, 50, "-", arcadeFaceSource, color.White, color.RGBA{0, 0, 255, 255}, input)
 	confirmButton = gamecommon.NewRectangleButton("confirm", ScreenWidth/2, 14*titleFontSize, 200, 50, "Confirm", arcadeFaceSource, color.White, color.RGBA{0, 0, 255, 255}, input)
-	quantityButton = gamecommon.NewRectangleButton("quantity", ScreenWidth/2-140, 14*titleFontSize, 60, 50, "0", arcadeFaceSource, color.White, backgroundColor, input)
+	quantityButton = gamecommon.NewRectangleButton("quantity", ScreenWidth/2-140, 14*titleFontSize, 60, 50, "0", arcadeFaceSource, color.White, gamecommon.BackgroundColor, input)
 }
 
 func NewShop() *Shop {

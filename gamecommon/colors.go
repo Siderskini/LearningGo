@@ -1,4 +1,4 @@
-// Copyright 2016 The Ebiten Authors
+// Copyright 2026 Siddharth Viswnathan
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ import (
 )
 
 var (
-	backgroundColor = color.RGBA{0xfa, 0xf8, 0xef, 0xff}
-	frameColor      = color.RGBA{0xbb, 0xad, 0xa0, 0xff}
+	BackgroundColor = color.RGBA{0xfa, 0xf8, 0xef, 0xff}
 )
 
 func tileColor(value string) color.Color {
