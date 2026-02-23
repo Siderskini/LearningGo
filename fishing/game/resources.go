@@ -12,20 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build !js
+
 package game
 
 import (
 	"embed"
-	_ "embed"
+	"home/gamecommon"
+	"io"
 )
 
 var (
-	//go:embed fishing.gif background.gif
-	resources embed.FS
-
-	//go:embed fishing.wav
-	fishingwav []byte
-
-	//go:embed startfishing.png
-	startfishing []byte
+	//go:embed fishing.gif background.gif fishing.wav startfishing.png
+	dir embed.FS
 )
+
+func OpenResource(name string) io.ReadCloser {
+	return gamecommon.TryPanic(dir.Open(name))
+}
+
+func OpenBytes(name string) []byte {
+	var file = OpenResource(name)
+	defer file.Close()
+	return gamecommon.TryPanic(io.ReadAll(file))
+}

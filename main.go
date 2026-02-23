@@ -20,12 +20,16 @@ import (
 )
 
 func main() {
+	if len(os.Args) < 2 {
+		fishing.StartGame()
+		return
+	}
 	switch os.Args[1] {
 	case "fishing":
 		fishing.StartGame()
 		return
 	case "fishingmobile":
-		fishing.Dummy()
+		//fishing.Dummy()
 		return
 	default:
 		panic("Invalid Argument")

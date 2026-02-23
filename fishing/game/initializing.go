@@ -16,7 +16,6 @@ package game
 
 import (
 	"home/gamecommon"
-	"home/gamecommon/save"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -64,7 +63,7 @@ func (initial *Initial) Update(g *Game) error {
 				Money:     0,
 			}
 			g.mode = Title
-			save.SaveGame(g.save)
+			gamecommon.SaveGame(g.save)
 		}
 		nameButton.Text = temp
 	}

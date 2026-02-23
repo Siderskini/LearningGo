@@ -2,7 +2,6 @@ package game
 
 import (
 	"home/gamecommon"
-	"home/gamecommon/save"
 	"image/color"
 	"math/rand"
 
@@ -92,7 +91,7 @@ func (g *Game) catchFish() {
 			} else {
 				g.save.Fish[fish] = held + 1
 			}
-			save.SaveGame(g.save)
+			gamecommon.SaveGame(g.save)
 			return
 		}
 		k--

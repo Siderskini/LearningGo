@@ -17,7 +17,6 @@ package game
 import (
 	"encoding/gob"
 	"home/gamecommon"
-	"home/gamecommon/save"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -79,10 +78,10 @@ func init() {
 	gob.Register(&Save{})
 	input = gamecommon.NewInput()
 	arcadeFaceSource = gamecommon.NewFont(fonts.MPlus1pRegular_ttf)
-	backGroundAnimation = gamecommon.NewAnimation(resources, "background.gif", 640)
-	fishingAnimation = gamecommon.NewAnimation(resources, "fishing.gif", 120)
+	backGroundAnimation = gamecommon.NewAnimation(OpenResource("background.gif"), 640)
+	fishingAnimation = gamecommon.NewAnimation(OpenResource("fishing.gif"), 120)
 	audioContext = audio.NewContext(48000)
-	audioPlayer = gamecommon.NewAudio(audioContext, fishingwav)
+	audioPlayer = gamecommon.NewAudio(audioContext, OpenBytes("fishing.wav"))
 	screenCapture = gamecommon.NewScreenCapture(10, "temp.gif")
 }
 
@@ -100,7 +99,7 @@ var (
 func NewGame() (*Game, error) {
 	m := Title
 	// Try to load a save. If one doesn't exist, send the user to initializing
-	save, err := save.LoadGame(&Save{})
+	save, err := gamecommon.LoadGame(&Save{})
 	if err != nil {
 		if os.IsNotExist(err) {
 			save = &Save{

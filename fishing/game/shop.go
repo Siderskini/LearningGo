@@ -17,7 +17,6 @@ package game
 import (
 	"bytes"
 	"home/gamecommon"
-	"home/gamecommon/save"
 	"image/color"
 	"strconv"
 
@@ -318,7 +317,7 @@ func (shop *Shop) makePurchase(g *Game) {
 		} else {
 			g.save.Inventory[shop.selectedItem] = shop.quantity
 		}
-		save.SaveGame(g.save)
+		gamecommon.SaveGame(g.save)
 	} else {
 		fish, ok := fishes[shop.selectedFish]
 		if !ok {
@@ -327,7 +326,7 @@ func (shop *Shop) makePurchase(g *Game) {
 		totalCost := fish.Price * shop.quantity
 		g.save.Money += totalCost
 		g.save.Fish[shop.selectedFish] -= shop.quantity
-		save.SaveGame(g.save)
+		gamecommon.SaveGame(g.save)
 	}
 	shop.resetSelection()
 }

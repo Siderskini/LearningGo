@@ -15,7 +15,7 @@
 package gamecommon
 
 import (
-	"embed"
+	"io"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -25,8 +25,7 @@ type Animation struct {
 	frame  int
 }
 
-func NewAnimation(resources embed.FS, filename string, duration int) *Animation {
-	file := TryPanic(resources.Open(filename))
+func NewAnimation(file io.ReadCloser, duration int) *Animation {
 	Frames := TryPanic(ToEbitenFrames(file, duration))
 	return &Animation{Frames: Frames, frame: 0}
 }
